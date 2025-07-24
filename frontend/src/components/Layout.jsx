@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import { Link, useLocation, Outlet } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { 
   Menu, 
@@ -9,26 +8,12 @@ import {
   BookOpen, 
   Briefcase, 
   User, 
-  Mail,
-  LogIn,
-  UserPlus,
-  LogOut,
-  Settings,
-  BarChart3
+  Mail
 } from 'lucide-react'
 
 const Layout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const { user, logout, isAuthenticated, isAdmin } = useAuth()
   const location = useLocation()
-  const navigate = useNavigate()
-
-  const handleLogout = async () => {
-    await logout()
-    navigate('/')
-    setIsUserMenuOpen(false)
-  }
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },
@@ -48,7 +33,11 @@ const Layout = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <img src="/src/assets/logo.ico" alt="Mike Learning App" className="h-8 w-8" />
+              <img 
+                src="/src/assets/logo_character.jpg" 
+                alt="Mike Learning App" 
+                className="h-10 w-10 rounded-full object-cover"
+              />
               <span className="text-xl font-bold gradient-text">
                 Mike Learning
               </span>
@@ -73,58 +62,6 @@ const Layout = () => {
                   </Link>
                 )
               })}
-            </div>
-
-            {/* User Actions */}
-            <div className="hidden md:flex items-center space-x-4">
-              {isAuthenticated ? (
-                <div className="relative">
-                  <Button variant="ghost" size="sm" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                    <User className="h-4 w-4 mr-2" />
-                    {user?.first_name}
-                  </Button>
-                  {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg z-50">
-                      <div className="p-2">
-                        <p className="text-sm font-medium text-foreground truncate">{user?.first_name} {user?.last_name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                      </div>
-                      <hr className="border-border" />
-                      <div className="p-1">
-                        <Link to="/dashboard" className="flex items-center w-full p-2 text-sm text-muted-foreground hover:bg-muted rounded-md" onClick={() => setIsUserMenuOpen(false)}>
-                          <BookOpen className="w-4 h-4 mr-2" />
-                          Dashboard
-                        </Link>
-                        {isAdmin && (
-                          <Link to="/admin" className="flex items-center w-full p-2 text-sm text-muted-foreground hover:bg-muted rounded-md" onClick={() => setIsUserMenuOpen(false)}>
-                            <BarChart3 className="w-4 h-4 mr-2" />
-                            Admin Panel
-                          </Link>
-                        )}
-                        <button onClick={handleLogout} className="flex items-center w-full p-2 text-sm text-red-500 hover:bg-muted rounded-md">
-                          <LogOut className="w-4 h-4 mr-2" />
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to="/login">
-                      <LogIn className="h-4 w-4 mr-2" />
-                      Login
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm">
-                    <Link to="/register">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Sign Up
-                    </Link>
-                  </Button>
-                </>
-              )}
             </div>
 
             {/* Mobile menu button */}
@@ -166,45 +103,6 @@ const Layout = () => {
                   </Link>
                 )
               })}
-              <div className="pt-4 border-t border-border space-y-2">
-                {isAuthenticated ? (
-                  <>
-                    <div className="px-3 mb-2">
-                      <p className="text-base font-medium text-foreground">{user?.first_name} {user?.last_name}</p>
-                      <p className="text-sm text-muted-foreground">{user?.email}</p>
-                    </div>
-                    <Link to="/dashboard" className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:bg-accent" onClick={() => setIsMenuOpen(false)}>
-                      <BookOpen className="h-5 w-5" />
-                      <span>Dashboard</span>
-                    </Link>
-                    {isAdmin && (
-                      <Link to="/admin" className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium text-muted-foreground hover:bg-accent" onClick={() => setIsMenuOpen(false)}>
-                        <BarChart3 className="h-5 w-5" />
-                        <span>Admin Panel</span>
-                      </Link>
-                    )}
-                    <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="flex items-center w-full space-x-2 px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-accent">
-                      <LogOut className="h-5 w-5" />
-                      <span>Sign Out</span>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Button asChild variant="ghost" className="w-full justify-start">
-                      <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                        <LogIn className="h-4 w-4 mr-2" />
-                        Login
-                      </Link>
-                    </Button>
-                    <Button asChild className="w-full justify-start">
-                      <Link to="/register" onClick={() => setIsMenuOpen(false)}>
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Sign Up
-                      </Link>
-                    </Button>
-                  </>
-                )}
-              </div>
             </div>
           </div>
         )}
@@ -222,9 +120,9 @@ const Layout = () => {
             <div className="col-span-1 md:col-span-2">
               <Link to="/" className="flex items-center space-x-2 mb-4">
                 <img 
-                  src="/src/assets/logo.svg" 
+                  src="/src/assets/logo_character.jpg" 
                   alt="Mike Learning App" 
-                  className="h-8 w-8"
+                  className="h-10 w-10 rounded-full object-cover"
                 />
                 <span className="text-xl font-bold gradient-text">
                   Mike Learning

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import api from '../services/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -28,19 +27,31 @@ const CourseDetail = () => {
   const [enrolledStages, setEnrolledStages] = useState([0]) // Start with first stage unlocked
   const [showPreview, setShowPreview] = useState(false)
 
+  const getYouTubeThumbnail = (videoId) => {
+    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
+  }
+
   const handleEnrollCourse = async () => {
     try {
       setIsEnrolling(true)
-      const response = await api.post(`/courses/${id}/enroll`)
+      const response = await fetch(`http://localhost:5000/api/courses/${id}/enroll`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
       
       if (response.ok) {
         setIsEnrolled(true)
-        // Show success message or redirect
         alert('Successfully enrolled in the course!')
+      } else {
+        throw new Error('Enrollment failed')
       }
     } catch (error) {
       console.error('Enrollment failed:', error)
       alert('Failed to enroll in the course. Please try again.')
+    } finally {
+      setIsEnrolling(false)
     }
   }
   
@@ -219,10 +230,10 @@ const CourseDetail = () => {
 
             {/* Course Content Tabs */}
             <Tabs defaultValue="curriculum" className="w-full">
-                      <div className="flex space-x-1">
+              <TabsList>
                 <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-              </div></TabsList>
+              </TabsList>
 
               <TabsContent value="curriculum" className="space-y-4">
                 <div className="mb-6">
@@ -269,7 +280,16 @@ const CourseDetail = () => {
                               }`}
                             >
                               <div className="flex items-center gap-3">
-                                <Video className="h-4 w-4 text-muted-foreground" />
+                                <div className="relative w-16 h-12 rounded overflow-hidden">
+                                  <img 
+                                    src={getYouTubeThumbnail(video.youtubeId)} 
+                                    alt={video.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                                    <Play className="h-3 w-3 text-white" />
+                                  </div>
+                                </div>
                                 <div>
                                   <div className="font-medium">{video.title}</div>
                                   <div className="text-sm text-muted-foreground">
