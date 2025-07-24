@@ -48,11 +48,7 @@ const Layout = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <img 
-                src="/src/assets/logo.svg" 
-                alt="Mike Learning App" 
-                className="h-8 w-8"
-              />
+              <img src="/src/assets/logo.ico" alt="Mike Learning App" className="h-8 w-8" />
               <span className="text-xl font-bold gradient-text">
                 Mike Learning
               </span>

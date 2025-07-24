@@ -19,7 +19,6 @@ import {
 const Home = () => {
   const featuredCourses = [
     {
-      id: 1,
       title: 'Web Development Mastery',
       description: 'Learn modern web development with React, Node.js, and more',
       thumbnail: '/src/assets/thumbnails/web_development.png',
