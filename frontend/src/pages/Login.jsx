@@ -84,7 +84,7 @@ const Login = () => {
           
           <div className="mb-6">
             <img 
-              src="/src/assets/logo.ico" 
+              src="/src/assets/logo_new.png" 
               alt="Mike Learning" 
               className="h-12 w-12 mx-auto mb-4"
             />

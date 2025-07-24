@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import api from '../services/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -22,22 +23,42 @@ import {
 
 const CourseDetail = () => {
   const { id } = useParams()
-  const [enrolledStages, setEnrolledStages] = useState([1]) // User has access to first stage
+  const [isEnrolling, setIsEnrolling] = useState(false)
+  const [isEnrolled, setIsEnrolled] = useState(false)
+  const [enrolledStages, setEnrolledStages] = useState([0]) // Start with first stage unlocked
+  const [showPreview, setShowPreview] = useState(false)
+
+  const handleEnrollCourse = async () => {
+    try {
+      setIsEnrolling(true)
+      const response = await api.post(`/courses/${id}/enroll`)
+      
+      if (response.ok) {
+        setIsEnrolled(true)
+        // Show success message or redirect
+        alert('Successfully enrolled in the course!')
+      }
+    } catch (error) {
+      console.error('Enrollment failed:', error)
+      alert('Failed to enroll in the course. Please try again.')
+    }
+  }
   
   // Mock course data - in real app, this would come from API
   const course = {
     id: parseInt(id),
     title: 'Web Development Mastery',
     description: 'Learn modern web development with React, Node.js, and database integration. This comprehensive course will take you from beginner to advanced level.',
-    thumbnail: '/src/assets/thumbnails/web_development.png',
     category: 'Development',
     difficulty: 'Beginner',
     duration: '12 weeks',
     students: 2847,
     rating: 4.9,
     instructor: 'Mike Johnson',
-    lastUpdated: '2024-12-01',
+    thumbnail: '/api/placeholder/800/450',
+    previewVideoId: 'dQw4w9WgXcQ', // YouTube video ID for preview
     language: 'English',
+    lastUpdated: '2024-12-01',
     stages: [
       {
         id: 1,
@@ -130,17 +151,42 @@ const CourseDetail = () => {
             {/* Course Header */}
             <div className="mb-8">
               <div className="aspect-video relative overflow-hidden rounded-lg mb-6">
-                <img 
-                  src={course.thumbnail} 
-                  alt={course.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <Button size="lg">
-                    <Play className="h-6 w-6 mr-2" />
-                    Watch Preview
-                  </Button>
-                </div>
+                {showPreview ? (
+                  <div className="relative w-full h-full">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${course.previewVideoId}?autoplay=1`}
+                      title="Course Preview"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="absolute inset-0"
+                    ></iframe>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="absolute top-2 right-2 bg-black/50 text-white hover:bg-black/70"
+                      onClick={() => setShowPreview(false)}
+                    >
+                      ✕
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <img 
+                      src={course.thumbnail} 
+                      alt={course.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <Button size="lg" onClick={() => setShowPreview(true)}>
+                        <Play className="h-6 w-6 mr-2" />
+                        Watch Preview
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className="flex items-center gap-2 mb-4">
@@ -173,11 +219,10 @@ const CourseDetail = () => {
 
             {/* Course Content Tabs */}
             <Tabs defaultValue="curriculum" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+                      <div className="flex space-x-1">
                 <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="instructor">Instructor</TabsTrigger>
-              </TabsList>
+              </div></TabsList>
 
               <TabsContent value="curriculum" className="space-y-4">
                 <div className="mb-6">
@@ -284,47 +329,6 @@ const CourseDetail = () => {
                   </ul>
                 </div>
               </TabsContent>
-
-              <TabsContent value="instructor" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                        <User className="h-8 w-8 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle>{course.instructor}</CardTitle>
-                        <CardDescription>Senior Web Developer & Instructor</CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">
-                      Mike Johnson is a senior web developer with over 8 years of experience 
-                      in building modern web applications. He has worked with companies like 
-                      Google and Microsoft, and has taught thousands of students worldwide.
-                    </p>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <div className="font-semibold">Experience</div>
-                        <div className="text-muted-foreground">8+ years</div>
-                      </div>
-                      <div>
-                        <div className="font-semibold">Students Taught</div>
-                        <div className="text-muted-foreground">50,000+</div>
-                      </div>
-                      <div>
-                        <div className="font-semibold">Courses</div>
-                        <div className="text-muted-foreground">12 courses</div>
-                      </div>
-                      <div>
-                        <div className="font-semibold">Rating</div>
-                        <div className="text-muted-foreground">4.8/5</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
             </Tabs>
           </div>
 
@@ -338,8 +342,13 @@ const CourseDetail = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Button size="lg" className="w-full">
-                  Enroll Now - Free
+                <Button 
+                  size="lg" 
+                  className="w-full"
+                  onClick={handleEnrollCourse}
+                  disabled={isEnrolling || isEnrolled}
+                >
+                  {isEnrolling ? 'Enrolling...' : isEnrolled ? 'Enrolled' : 'Enroll Now - Free'}
                 </Button>
                 
                 <div className="space-y-3 text-sm">

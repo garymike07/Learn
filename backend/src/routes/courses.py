@@ -62,7 +62,7 @@ def get_course(course_id):
         
         try:
             verify_jwt_in_request(optional=True)
-            user_id = get_jwt_identity()
+            user_id = int(get_jwt_identity())
             if user_id:
                 user_progress = UserCourseProgress.query.filter_by(
                     user_id=user_id,
@@ -106,7 +106,7 @@ def get_course(course_id):
 @jwt_required()
 def enroll_course(course_id):
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Check if course exists and is active
         course = Course.query.get(course_id)
@@ -146,7 +146,7 @@ def enroll_course(course_id):
 @jwt_required()
 def update_video_progress(video_id):
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         data = request.get_json()
         
         progress = min(100, max(0, data.get('progress', 0)))  # Clamp between 0-100
@@ -190,7 +190,7 @@ def update_video_progress(video_id):
 @jwt_required()
 def get_dashboard():
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         
         # Get enrolled courses with progress
         user_progress_records = UserCourseProgress.query.filter_by(user_id=user_id).all()

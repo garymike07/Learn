@@ -8,7 +8,9 @@ import CourseDetail from './pages/CourseDetail';
 import Career from './pages/Career';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import Login from './pages/Login';
+import logo from 
+
+./pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AdminPanel from './pages/AdminPanel';

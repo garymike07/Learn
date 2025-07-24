@@ -34,7 +34,7 @@ def register():
         
         # Create access token
         access_token = create_access_token(
-            identity=user.id,
+            identity=str(user.id),
             expires_delta=timedelta(days=7)
         )
         
@@ -69,7 +69,7 @@ def login():
         db.session.commit()
         
         access_token = create_access_token(
-            identity=user.id,
+            identity=str(user.id),
             expires_delta=timedelta(days=7)
         )
         
@@ -86,7 +86,7 @@ def login():
 @jwt_required()
 def get_profile():
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
@@ -103,7 +103,7 @@ def get_profile():
 @jwt_required()
 def update_profile():
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
@@ -138,7 +138,7 @@ def update_profile():
 @jwt_required()
 def change_password():
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
